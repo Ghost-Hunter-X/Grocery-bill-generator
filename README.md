@@ -9,3 +9,5 @@ Custom key for custom items.
 Saving bill with name.
 
 Recalling history.
+
+Search name from history.
