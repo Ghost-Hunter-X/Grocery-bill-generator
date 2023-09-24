@@ -1,7 +1,3 @@
-###Check this and make it searchable with f
-###Do make an isalpha loop command to make input lowercase
-###Restructure commands printed and use alphabets
-
 
 
 #Variable that can be changed
@@ -18,7 +14,7 @@ name_7,cost_7="₹20 Items",20
 name_8,cost_8="₹30 Items",30
 name_9,cost_9="₹50 Items",50
 
-
+### Program Starts here
 import json
 import os
 import datetime
