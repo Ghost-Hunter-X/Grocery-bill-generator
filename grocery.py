@@ -22,6 +22,7 @@ name_9,cost_9="₹50 Items",50
 import json
 import os
 import datetime
+import re
 
 
 def header():
@@ -36,6 +37,10 @@ def header():
     print(str(datetime.datetime.now()))
     return
 
+def strip_char(a): # a-Variable, removes char from input
+    x = "".join(re.findall("[0-9]|\.",a))
+    return x
+
 def clear():
     print("\033c", end='')
     return
@@ -49,7 +54,7 @@ def pause():
     return
 
 
-z=0  #
+z=0  # Total Price of bill
 e=0  # Price of current item being added
 x=0  # Input value from user
 ender="-"*24 # make lines
@@ -75,9 +80,9 @@ while 1:
     x=(input("Select item number you want to add to bill:-"))
 
     
-    if x.isnumeric():
+    if x.isnumeric(): # Pre defined prices
         x=int(x)
-        if x in range(0,10): #Pre defined prices
+        if x in range(0,10): 
             if x==0:
                 c=cost_0
             elif x==1:
@@ -98,7 +103,7 @@ while 1:
                 c=cost_8
             elif x==9:
                 c=cost_9
-            y=float(input("Enter quantity of selected item or Weight(in KG):-"))
+            y=float(strip_char((input("Enter quantity of selected item or Weight(in KG):-"))))
             d=(c*y)   # cost x quantity
             z=(z)+(d)
             e=b.get(a.get(x),None)   # Checking if selected item is already present in bill
@@ -113,119 +118,121 @@ while 1:
             pass
         e=0
         
+    elif x.isalpha():
+        x=x.lower()
 
-    elif x=="z": # Clear current bill
-        b={}
-        z=0
-        clear()
-        print("Bill Cleared!")
-
-
-    elif x=="h": # Read history
-        print()
-        print("-------------------------")
-        print()
-        print(os.path.abspath("History.txt"))
-        r=open("History.txt","r+" ,encoding="utf-8", errors='ignore')
-        with open("History.txt","r+",encoding="utf-8", errors='ignore') as f:
-            for i in r:
-                print(i.strip('\n'))
-        pause()
-        clear()
+        if x=="z": # Clear current bill
+            b={}
+            z=0
+            clear()
+            print("Bill Cleared!")
 
 
-    elif x=="c": # Custom item
-        fl=str(input("Enter Name of item = "))
-        g=float(input("Price per item or per KG = "))
-        h=float(input("Number of items or weight(In KG) = "))
-        f=fl.title()
-        i=g*h
-        e=b.get(f)
-        if e is None:
-            e=0
-        else:
-            e=int(e)
-        z=(z)+(i)
-        b[f]=e+i
-        clear()
-        print("Item added")
+        elif x=="h": # Read history
+            print()
+            print("-------------------------")
+            print()
+            print(os.path.abspath("History.txt"))
+            r=open("History.txt","r+" ,encoding="utf-8", errors='ignore')
+            with open("History.txt","r+",encoding="utf-8", errors='ignore') as f:
+                for i in r:
+                    print(i.strip('\n'))
+            pause()
+            clear()
 
-    
-    elif x=="s": #Saving bill to file
-        for key,value in b.items():
-            if value<=0:
-                pass
+
+        elif x=="c": # Custom item
+            fl=str(input("Enter Name of item = "))
+            g=float(strip_char(input("Price per item or per KG = ")))
+            h=float(strip_char(input("Number of items or weight(In KG) = ")))
+            f=fl.title()
+            i=g*h
+            e=b.get(f)
+            if e is None:
+                e=0
             else:
-                print(key ,":" ,value)
-        print("Total :",z)
-        j=input("Do you want to save bill?   y=Yes , any other key=no")
-        j=j.lower()
-        if j=="y":
-            nam=str(input("Name of customer: "))
-            print("Saving...")
-            history = open('History.txt','a' , encoding="utf-8")
-            history.writelines(nam)
-            exline(history)
-            now = datetime.datetime.now()
-            history.writelines(str(now))
-            exline(history)
-            exline(history)
+                e=int(e)
+            z=(z)+(i)
+            b[f]=e+i
+            clear()
+            print("Item added")
+
+        
+        elif x=="s": #Saving bill to file
             for key,value in b.items():
                 if value<=0:
                     pass
                 else:
-                    k=str(value)
-                    history.writelines((key ," = ₹" ,k))
-                    exline(history)
-            history.writelines(("Total = ₹",str(z)))
-            xx=0
-            for xx in range(0,4):
+                    print(key ,":" ,value)
+            print("Total :",z)
+            j=input("Do you want to save bill?   y=Yes , any other key=no")
+            j=j.lower()
+            if j=="y":
+                nam=str(input("Name of customer: "))
+                print("Saving...")
+                history = open('History.txt','a' , encoding="utf-8")
+                history.writelines(nam)
                 exline(history)
-                if xx==1:
-                    history.writelines(ender)
-                xx=xx+1
-            history.writelines
-            history.close()
+                now = datetime.datetime.now()
+                history.writelines(str(now))
+                exline(history)
+                exline(history)
+                for key,value in b.items():
+                    if value<=0:
+                        pass
+                    else:
+                        k=str(value)
+                        history.writelines((key ," = ₹" ,k))
+                        exline(history)
+                history.writelines(("Total = ₹",str(z)))
+                xx=0
+                for xx in range(0,4):
+                    exline(history)
+                    if xx==1:
+                        history.writelines(ender)
+                    xx=xx+1
+                history.writelines
+                history.close()
+                clear()
+                print("Bill Saved!""\n""\n")
+            elif j=="n" or j.isalnum():
+                pass
             clear()
-            print("Bill Saved!""\n""\n")
-        elif j=="n" or j.isalnum():
-            pass
-        clear()
 
 
-    elif x=="f": ###Check this and make it searchable with f
-        search=input("Name of customer - ")
-        with open("History.txt","r+",encoding="utf-8", errors='ignore') as f:
-            for i in f:
-                i=i.strip('\n')
-                if i==ender:
-                    #print(ender)
-                    end_var=1
-                elif i==search:
-                    print(ender)
-                    end_var=0
-                else:
-                    pass
-                if end_var==0:
-                    print(i)
-                else:
-                    pass
-        print(ender)
-        pause()
-        clear()
-
-
-    elif x=="e":
-        clear()
-        w=input("Are you sure you want to exit?  y=yes OR n=no : ")
-        w=w.lower()
-        if w=="y":
-            print()
-            print('Thank you for using our software!')
+        elif x=="f": #Check this and make it searchable with f
+            search=input("Name of customer - ")
+            with open("History.txt","r+",encoding="utf-8", errors='ignore') as f:
+                for i in f:
+                    i=i.strip('\n')
+                    if i==ender:
+                        #print(ender)
+                        end_var=1
+                    elif i==search:
+                        print(ender)
+                        end_var=0
+                    else:
+                        pass
+                    if end_var==0:
+                        print(i)
+                    else:
+                        pass
+            print(ender)
             pause()
-            break
-        else:
-            pass
+            clear()
+
+
+        elif x=="e":
+            clear()
+            w=input("Are you sure you want to exit?  y=yes OR n=no : ")
+            w=w.lower()
+            if w=="y":
+                print()
+                print('Thank you for using our software!')
+                pause()
+                break
+            else:
+                pass
 
 
     else:
